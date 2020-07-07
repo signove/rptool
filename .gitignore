@@ -1,3 +1,4 @@
 ./tests
 ./logs
 .idea
+./core/__pycache__/
