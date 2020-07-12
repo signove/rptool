@@ -25,7 +25,6 @@ class Clock:
         self._end = time.time()
         self._elapsed = (self._end - self._start)
         self._start = self._end
-        print('time: {}'.format(round(self._elapsed, 2)))
 
     def getTime(self):
         return round(self._elapsed, 2)
@@ -65,11 +64,13 @@ class Recorder:
 
     def onPress(self, *args):
         # key
-        self.save('press {}\n'.format(args))
+        print(args)
+        self.save('press key={}\n'.format(args[0]))
 
     def onRelease(self, *args):
+        pass
         # key
-        self.save('release {}\n'.format(args))
+        # self.save('release key={}\n'.format(args[0].char))
 
     def start(self, file):
         self.file = file
@@ -81,6 +82,7 @@ class Recorder:
         self.mouseListener.stop()
         self.keyboardListener.stop()
         self.log.debug('stop recording')
+
 
 class Trace:
 
@@ -98,8 +100,14 @@ class Trace:
         self.type = trace_parts[0]
         if self.type == 'click':
             self.parseClick(trace_parts)
+        elif self.type == 'press':
+            self.parsePress(trace_parts)
         else:
             pass
+
+    def parsePress(self, trace_parts):
+        self.key = trace_parts[1].split('=')[1].replace('\'', '')
+        print('parse key', self.key)
 
     def parseClick(self, trace_parts):
         self.x = int(trace_parts[1].split('=')[1])
@@ -118,6 +126,9 @@ class Trace:
     def getType(self):
         return self.type
 
+    def getKey(self):
+        return self.key
+
 
 class PlayBack:
 
@@ -130,9 +141,15 @@ class PlayBack:
         for trace in self.traces:
             if trace.getType() == 'click':
                 self.click(trace)
+            if trace.getType() == 'press':
+                self.press(trace)
+            else:
+                pass
+
+    def press(self, trace):
+        pyautogui.typewrite(trace.getKey(), 0.1)
 
     def click(self, trace):
-        print('trace back click')
         pyautogui.moveTo(trace.getX(), trace.getY(), trace.getTime())
         pyautogui.click()
 
