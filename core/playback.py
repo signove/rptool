@@ -4,6 +4,7 @@ from pynput.keyboard import Key
 from pynput.keyboard import Listener as KeyboardListener
 from core.logger import Logger
 
+
 class Trace:
 
     def __init__(self, raw):
@@ -33,8 +34,6 @@ class Trace:
 
         if self.key in ['shift_r', 'shift_l']:
             self.key = 'shift'
-
-        print('parsed key', self.key)
 
     def parseClick(self, trace_parts):
         self.x = int(trace_parts[1].split('=')[1])
@@ -69,7 +68,6 @@ class PlayBack:
         self.hostKeys = []
         self.keyboardListener = KeyboardListener(on_press=self.onPress, on_release=self.onRelease)
         self.stopped = False
-        self.running = False
 
     def onPress(self, *args):
         pass
@@ -79,9 +77,7 @@ class PlayBack:
         if args[0] == Key.esc:
             self.keyboardListener.stop()
             self.stopped = True
-            self.running = False
             return False
-        print('release')
 
     def traceBack(self):
         for trace in self.traces:
@@ -109,17 +105,18 @@ class PlayBack:
                     pyautogui.hotkey(self.hostKeys[0], self.hostKeys[1], self.hostKeys[2])
                 self.hostKeys = []
             else:
-                pyautogui.typewrite(trace.getKey(), 0.1)
+                key = trace.getKey()
+                if key in ['space', 'backspace', 'enter', 'caps_lock']:
+                    pyautogui.press(key)
+                else:
+                    pyautogui.typewrite(key, 0.1)
 
     def click(self, trace):
         pyautogui.moveTo(trace.getX(), trace.getY(), trace.getTime())
         pyautogui.click()
 
     def play(self, file):
-        # Avoid start twice the same thread
-        if not self.running:
-            self.running = True
-            self.keyboardListener.start()
+        self.keyboardListener.start()
         self.traceReader(file)
         self.traceBack()
 
