@@ -7,6 +7,7 @@ from core.rptool import RPTool
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(676, 456)
@@ -140,7 +141,6 @@ class Ui_MainWindow(object):
 
     def listTests(self):
         for test in self.rpt.getTestFiles():
-            print (test)
             self.lvTestCases.addItem(test)
 
     def addTestCase(self):
@@ -167,6 +167,7 @@ class Ui_MainWindow(object):
         print('playing ', self.tcItem.text())
         self.pbRec.setEnabled(True)
         self.pbPlay.setEnabled(False)
+        self.rpt.play(self.tcItem.text())
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
