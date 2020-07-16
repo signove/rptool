@@ -1,9 +1,12 @@
+#!/usr/bin/env python3
+
+
 # -*- coding: utf-8 -*-
 import pyautogui
 from pynput.keyboard import Key
 from pynput.keyboard import Listener as KeyboardListener
 from core.logger import Logger
-
+from core.alert import Alert
 
 class Trace:
 
@@ -13,6 +16,8 @@ class Trace:
         self.y = 0
         self.key = 0
         self.time = 0
+        self.dx = 0
+        self.dy = 0
         self.parse(raw)
 
     def parse(self, raw):
@@ -23,6 +28,8 @@ class Trace:
             self.parseClick(trace_parts)
         elif self.type == 'press':
             self.parsePress(trace_parts)
+        elif self.type == 'scroll':
+            self.parseScroll(trace_parts)
         else:
             pass
 
@@ -40,11 +47,22 @@ class Trace:
         self.y = int(trace_parts[2].split('=')[1])
         self.time = float(trace_parts[3].split('=')[1])
 
+    def parseScroll(self, trace_parts):
+        self.dx = int(trace_parts[1].split('=')[1])
+        self.dy = int(trace_parts[2].split('=')[1])
+        print('dy ', self.dy)
+
     def getX(self):
         return self.x
 
     def getY(self):
         return self.y
+
+    def getDX(self):
+        return self.dx
+
+    def getDY(self):
+        return self.dy
 
     def getTime(self):
         return self.time
@@ -68,6 +86,7 @@ class PlayBack:
         self.hostKeys = []
         self.keyboardListener = KeyboardListener(on_press=self.onPress, on_release=self.onRelease)
         self.stopped = False
+        self.alert = Alert('RPTool - Playback')
 
     def onPress(self, *args):
         pass
@@ -77,6 +96,7 @@ class PlayBack:
         if args[0] == Key.esc:
             self.keyboardListener.stop()
             self.stopped = True
+            self.alert.notify('Playback stopped!')
             return False
 
     def traceBack(self):
@@ -84,8 +104,10 @@ class PlayBack:
             if not self.stopped:
                 if trace.getType() == 'click':
                     self.click(trace)
-                if trace.getType() == 'press':
+                elif trace.getType() == 'press':
                     self.press(trace)
+                elif trace.getType() == 'scroll':
+                    self.scroll(trace)
                 else:
                     pass
             else:
@@ -106,7 +128,7 @@ class PlayBack:
                 self.hostKeys = []
             else:
                 key = trace.getKey()
-                if key in ['space', 'backspace', 'enter', 'caps_lock']:
+                if key in ['space', 'backspace', 'enter', 'caps_lock', 'esc']:
                     pyautogui.press(key)
                 else:
                     pyautogui.typewrite(key, 0.1)
@@ -114,6 +136,9 @@ class PlayBack:
     def click(self, trace):
         pyautogui.moveTo(trace.getX(), trace.getY(), trace.getTime())
         pyautogui.click()
+
+    def scroll(self, trace):
+        pyautogui.scroll(trace.getDY())
 
     def play(self, file):
         self.keyboardListener.start()

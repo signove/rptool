@@ -1,8 +1,12 @@
+#!/usr/bin/env python3
+
+
 # -*- coding: utf-8 -*-
 from core.rptio import FileManager
 from core.logger import Logger
 from core.recorder import Recorder
 from core.playback import PlayBack
+from core.alert import Alert
 
 
 class RPTool:
@@ -13,6 +17,7 @@ class RPTool:
         self.log = Logger('RPTool')
         self.fileManager = FileManager()
         self.file = ''
+        self.alert = Alert('RPTool')
 
     def getTestFolder(self):
         return '{}/tests'.format(self.fileManager.getCurrentFolder())
@@ -21,6 +26,7 @@ class RPTool:
         return self.fileManager.list(self.getTestFolder())
 
     def rec(self, test_name):
+        self.alert.notify('Recording {} ...'.format(test_name))
         self.recorder = Recorder(self.fileManager)
         self.log.debug('recording \'{0}\'...'.format(test_name))
         self.saveTestFile(test_name)
@@ -29,8 +35,10 @@ class RPTool:
     def delete(self, test_name):
         self.log.debug('deleting \'{0}\'...'.format(test_name))
         self.fileManager.delete(self.getFullFileName(test_name))
+        self.alert.notify('Deleting {} ...'.format(test_name))
 
     def play(self, test_name):
+        self.alert.notify('Playback {0}'.format(test_name))
         self.playback = PlayBack(self.fileManager)
         self.log.debug('playback \'{0}\'...'.format(test_name))
         self.playback.play(self.getFullFileName(test_name))
