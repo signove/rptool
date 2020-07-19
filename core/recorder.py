@@ -58,6 +58,8 @@ class Recorder:
             self.log.debug('stopped recording, ESC key was pressed')
             self.alert.notify('Recording stopped!')
             return False
+        if args[0] == Key.f2:
+            self.alert.notify('print screen')
 
     def start(self, file):
         self.file = file
