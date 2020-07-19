@@ -8,6 +8,7 @@ from pynput.keyboard import Listener as KeyboardListener
 from core.logger import Logger
 from core.alert import Alert
 
+
 class Trace:
 
     def __init__(self, raw):
@@ -18,6 +19,7 @@ class Trace:
         self.time = 0
         self.dx = 0
         self.dy = 0
+        self.drag = (0, 0)
         self.parse(raw)
 
     def parse(self, raw):
@@ -30,15 +32,20 @@ class Trace:
             self.parsePress(trace_parts)
         elif self.type == 'scroll':
             self.parseScroll(trace_parts)
+        elif self.type == 'drag':
+            self.parseDrag(trace_parts)
         else:
             pass
 
+    def parseDrag(self, trace_parts):
+        x2 = int(trace_parts[3].split('=')[1])
+        y2 = int(trace_parts[4].split('=')[1])
+        self.drag = (x2, y2)
+
     def parsePress(self, trace_parts):
         self.key = trace_parts[1].split('=')[1].replace('\'', '')
-
         if '.' in self.key:
             self.key = self.key.split('.')[1]
-
         if self.key in ['shift_r', 'shift_l']:
             self.key = 'shift'
 
@@ -50,7 +57,9 @@ class Trace:
     def parseScroll(self, trace_parts):
         self.dx = int(trace_parts[1].split('=')[1])
         self.dy = int(trace_parts[2].split('=')[1])
-        print('dy ', self.dy)
+
+    def getDrag(self):
+        return self.drag
 
     def getX(self):
         return self.x
@@ -108,15 +117,29 @@ class PlayBack:
                     self.press(trace)
                 elif trace.getType() == 'scroll':
                     self.scroll(trace)
+                elif trace.getType() == 'drag':
+                    self.drag(trace)
                 else:
                     pass
             else:
                 print('Stopped playback')
                 return
 
+    def drag(self, trace):
+        x, y = trace.getDrag()
+        pyautogui.dragTo(x, y, 1, button='left')
+
+    # TODO :: Need work here to Fix ALT+TAB ...
+    def checkAltTab(self):
+        if len(self.hostKeys) > 2:
+            pyautogui.hotkey(self.hostKeys[0], self.hostKeys[1])
+            self.hostKeys = self.hostKeys[2:]
+
     def press(self, trace):
         if trace.isHotKey():
+            # TODO :: Need work here to Fix ALT+TAB ...
             self.hostKeys.append(trace.getKey())
+            self.checkAltTab()
         else:
             if len(self.hostKeys) > 0:
                 self.hostKeys.append(trace.getKey())

@@ -20,6 +20,8 @@ class Recorder:
         self.keyboardListener = KeyboardListener(on_press=self.onPress, on_release=self.onRelease)
         self.clock = Clock()
         self.alert = Alert('RPTool - Recording')
+        self.drag_start = (0, 0)
+        self.drag_start = (0, 0)
 
 
     def save(self, trace):
@@ -27,13 +29,23 @@ class Recorder:
 
     def onClick(self, *args):
         self.clock.start()
+        print('click: {}'.format(args))
         pressed = args[3]
         if pressed:
+            self.drag_start = (args[0], args[1])
             trace = 'click x={}, y={}, time={}\n'.format(args[0], args[1], self.clock.getTime())
             self.alert.notify(trace)
             self.save(trace)
         else:
-            pass
+            self.drag_end = (args[0], args[1])
+            if self.drag_start != self.drag_end:
+                x1, y1 = self.drag_start
+                x2, y2 = self.drag_end
+                trace = 'drag x1={0}, y1={1}, x2={2}, y2={3}\n'.format(x1, y1, x2, y2)
+                self.alert.notify(trace)
+                self.save(trace)
+            else:
+                pass
 
     def onScroll(self, *args):
         dx, dy = args[2], args[3]
