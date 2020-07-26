@@ -7,6 +7,7 @@ from pynput.keyboard import Key
 from pynput.keyboard import Listener as KeyboardListener
 from core.logger import Logger
 from core.alert import Alert
+from core.settings import Settings
 
 
 class Trace:
@@ -95,7 +96,10 @@ class PlayBack:
         self.hostKeys = []
         self.keyboardListener = KeyboardListener(on_press=self.onPress, on_release=self.onRelease)
         self.stopped = False
+        self.interval = 0
+        self.file = ''
         self.alert = Alert('RPTool - Playback')
+        self.setting = Settings()
 
     def onPress(self, *args):
         pass
@@ -105,8 +109,12 @@ class PlayBack:
         if args[0] == Key.esc:
             self.keyboardListener.stop()
             self.stopped = True
-            self.alert.notify('Playback stopped!')
+            self.alert.notify('[ESC] Playback stopped')
             return False
+        # Stop the loop execution
+        if args[0] == Key.f3:
+            self.alert.notify('[F3] Loop stopped')
+            self.setting.saveConfig({'loop': '0'})
 
     def traceBack(self):
         for trace in self.traces:

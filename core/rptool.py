@@ -50,3 +50,6 @@ class RPTool:
 
     def getFullFileName(self, test_name):
         return '{0}/{1}'.format(self.getTestFolder(), test_name)
+
+    def notifyLoop(self, time):
+        self.alert.notify('Loop enabled to repeat in {} s'.format(time))

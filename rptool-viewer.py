@@ -4,10 +4,11 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+import time
+from core.settings import Settings
 from core.rptool import RPTool
-
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
 
@@ -71,10 +72,12 @@ class Ui_MainWindow(object):
         # Loop Tests
         self.chboxLoop = QtWidgets.QCheckBox(self.tabRPTool)
         self.chboxLoop.setGeometry(QtCore.QRect(510, 340, 61, 21))
+        self.chboxLoop.stateChanged.connect(self.changeLoopState)
         self.chboxLoop.setObjectName("chboxLoop")
         self.leInterval = QtWidgets.QLineEdit(self.tabRPTool)
         self.leInterval.setGeometry(QtCore.QRect(580, 340, 71, 25))
         self.leInterval.setObjectName("leInterval")
+        self.leInterval.setText('0')
 
         self.tabWidget.addTab(self.tabRPTool, "")
         self.tabSettings = QtWidgets.QWidget()
@@ -144,9 +147,21 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         # RPTool init
         self.rpt = RPTool()
+        self.setting = Settings()
+        self.interval = 0
+
         self.setFolderDir()
         self.listTests()
 
+
+    def changeLoopState(self):
+        if self.chboxLoop.isChecked():
+            self.interval = int(self.leInterval.text())
+            self.rpt.notifyLoop(self.interval)
+        else:
+            self.interval = 0
+        self.setting.saveConfig({'loop': self.interval})
+        cfg = self.setting.readConfig()
 
     def setFolderDir(self):
         self.leTestFolder.setText(self.rpt.getTestFolder())
@@ -180,6 +195,17 @@ class Ui_MainWindow(object):
         self.pbRec.setEnabled(True)
         self.pbPlay.setEnabled(False)
         self.rpt.play(self.tcItem.text())
+        self.checkLoopEnabled()
+
+    def checkLoopEnabled(self):
+        cfg = self.setting.readConfig()
+        if cfg['loop'] == '0':
+            self.chboxLoop.setChecked(False)
+            self.leInterval.setText('0')
+        else:
+            self.rpt.notifyLoop(cfg['loop'])
+            time.sleep(int(cfg['loop']))
+            self.playTestCase()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -204,6 +230,7 @@ class Ui_MainWindow(object):
         self.lblPlatform.setText(_translate("MainWindow", "Platforms"))
         self.lblBuild.setText(_translate("MainWindow", "Builds"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabSettings), _translate("MainWindow", "Settings"))
+
 
 if __name__ == "__main__":
     import sys
