@@ -82,9 +82,14 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tabRPTool, "")
         self.tabSettings = QtWidgets.QWidget()
         self.tabSettings.setObjectName("tabSettings")
+
+        # Save settings
         self.pbSaveSettings = QtWidgets.QPushButton(self.tabSettings)
         self.pbSaveSettings.setGeometry(QtCore.QRect(10, 330, 61, 25))
         self.pbSaveSettings.setObjectName("pbSaveSettings")
+        self.pbSaveSettings.clicked.connect(self.saveSettings)
+
+
         self.lblUsername = QtWidgets.QLabel(self.tabSettings)
         self.lblUsername.setGeometry(QtCore.QRect(10, 0, 81, 31))
         self.lblUsername.setObjectName("lblUsername")
@@ -97,33 +102,48 @@ class Ui_MainWindow(object):
         self.leTestlinkApiKey = QtWidgets.QLineEdit(self.tabSettings)
         self.leTestlinkApiKey.setGeometry(QtCore.QRect(310, 30, 341, 25))
         self.leTestlinkApiKey.setObjectName("leTestlinkApiKey")
+        # combo box projects
         self.cbProjects = QtWidgets.QComboBox(self.tabSettings)
         self.cbProjects.setGeometry(QtCore.QRect(10, 150, 291, 25))
         self.cbProjects.setObjectName("cbProjects")
+        self.cbProjects.currentTextChanged.connect(self.getTestlinkPlans)
+
         self.leTestlinkAddress = QtWidgets.QLineEdit(self.tabSettings)
         self.leTestlinkAddress.setGeometry(QtCore.QRect(10, 90, 641, 25))
         self.leTestlinkAddress.setObjectName("leTestlinkAddress")
         self.lblTestlinkAddress = QtWidgets.QLabel(self.tabSettings)
         self.lblTestlinkAddress.setGeometry(QtCore.QRect(10, 70, 101, 17))
         self.lblTestlinkAddress.setObjectName("lblTestlinkAddress")
+
+        # connect push button
         self.pbConnect = QtWidgets.QPushButton(self.tabSettings)
         self.pbConnect.setGeometry(QtCore.QRect(80, 330, 80, 25))
         self.pbConnect.setObjectName("pbConnect")
+        self.pbConnect.clicked.connect(self.getTestlinkProjects)
+
         self.lblSettingsStatus = QtWidgets.QLabel(self.tabSettings)
         self.lblSettingsStatus.setGeometry(QtCore.QRect(180, 330, 171, 21))
         self.lblSettingsStatus.setObjectName("lblSettingsStatus")
         self.lblTestProject = QtWidgets.QLabel(self.tabSettings)
         self.lblTestProject.setGeometry(QtCore.QRect(10, 120, 91, 31))
         self.lblTestProject.setObjectName("lblTestProject")
+
+        # Combobox plans
         self.cbPlans = QtWidgets.QComboBox(self.tabSettings)
         self.cbPlans.setGeometry(QtCore.QRect(310, 150, 341, 25))
         self.cbPlans.setObjectName("cbPlans")
+        self.cbPlans.currentTextChanged.connect(self.getTeslinkPlatforms)
+
         self.lblTestPlan = QtWidgets.QLabel(self.tabSettings)
         self.lblTestPlan.setGeometry(QtCore.QRect(310, 126, 91, 21))
         self.lblTestPlan.setObjectName("lblTestPlan")
+
+        #Combobox platforms
         self.cbPlatforms = QtWidgets.QComboBox(self.tabSettings)
         self.cbPlatforms.setGeometry(QtCore.QRect(10, 210, 291, 25))
         self.cbPlatforms.setObjectName("cbPlatforms")
+        self.cbPlatforms.currentTextChanged.connect(self.getTestlinkBuilds)
+
         self.cbBuilds = QtWidgets.QComboBox(self.tabSettings)
         self.cbBuilds.setGeometry(QtCore.QRect(310, 210, 341, 25))
         self.cbBuilds.setObjectName("cbBuilds")
@@ -147,12 +167,65 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         # RPTool init
         self.rpt = RPTool()
-        self.setting = Settings()
+        self.setting = Settings('rptool.cfg')
+        self.config = self.rpt.getConfig()
         self.interval = 0
-
         self.setFolderDir()
         self.listTests()
+        self.testlinkSettings()
 
+
+    def saveSettings(self):
+        value = self.cbBuilds.currentText()
+        self.config['build_id'] = value.split('-')[0]
+        self.config['build_name'] = value.split('-')[1]
+        print('config ', self.config)
+        self.rpt.saveConfig(self.config)
+
+    def testlinkSettings(self):
+        self.leUsername.setText(self.rpt.getUsername())
+        self.leTestlinkAddress.setText(self.rpt.getUrl())
+        self.leTestlinkApiKey.setText(self.rpt.getApiKey())
+
+    def getTestlinkBuilds(self, value):
+        print('loading build for', value)
+        self.config['platform_id'] = value.split('-')[0]
+        builds = self.rpt.getBuilds(self.config['plan_id'])
+        self.cbBuilds.clear()
+        for build in builds:
+            id = build['id']
+            name = build['name']
+            self.cbBuilds.addItem('{0}-{1}'.format(id, name))
+
+    def getTeslinkPlatforms(self, value):
+        print('loading platforms for', value)
+        self.config['plan_id'] = value.split('-')[0]
+        platforms = self.rpt.getPlatforms(self.config['project_id'])
+        self.cbPlatforms.clear()
+        for platform in platforms:
+            id = platform['id']
+            name = platform['name']
+            self.cbPlatforms.addItem('{0}-{1}'.format(id, name))
+
+    def getTestlinkPlans(self, value):
+        print('loading plans for ', value)
+        self.config['project_id'] = int(value.split('-')[0])
+        plans = self.rpt.getPlans(self.config['project_id'])
+        self.cbPlans.clear()
+        for plan in plans:
+            id = plan['id']
+            name = plan['name']
+            self.cbPlans.addItem('{0}-{1}'.format(id, name))
+
+    def getTestlinkProjects(self):
+        print('load projects')
+        projects = self.rpt.getProjects()
+        self.cbProjects.clear()
+        for project in projects:
+            id = project['id']
+            prefix = project['prefix']
+            name = project['name']
+            self.cbProjects.addItem('{0}-{1}-{2}'.format(id, prefix, name))
 
     def changeLoopState(self):
         if self.chboxLoop.isChecked():

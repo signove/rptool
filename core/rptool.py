@@ -7,6 +7,8 @@ from core.logger import Logger
 from core.recorder import Recorder
 from core.playback import PlayBack
 from core.alert import Alert
+from core.testlinkapi import TestlinkAPI
+from core.settings import Settings
 
 
 class RPTool:
@@ -18,6 +20,8 @@ class RPTool:
         self.fileManager = FileManager()
         self.file = ''
         self.alert = Alert('RPTool')
+        self.api = TestlinkAPI()
+        self.setting = Settings('testlink.cfg')
 
     def getTestFolder(self):
         return '{}/tests'.format(self.fileManager.getCurrentFolder())
@@ -53,3 +57,39 @@ class RPTool:
 
     def notifyLoop(self, time):
         self.alert.notify('Loop enabled to repeat in {} s'.format(time))
+
+    def getUsername(self):
+        return self.api.getUsername()
+
+    def getApiKey(self):
+        return self.api.getApiKey()
+
+    def getUrl(self):
+        return self.api.getUrl()
+
+    def getProjects(self):
+        return self.api.getProjects()
+
+    def getPlans(self, project_id):
+        return self.api.getPlans(project_id)
+
+    def getPlatforms(self, project_id):
+        platforms = []
+        map = self.api.getPlatforms(project_id)
+        for key in map:
+            platforms.append(map[key])
+        return platforms
+
+    def getBuilds(self, plan_id):
+        return self.api.getBuilds(plan_id)
+
+    def saveConfig(self, config):
+        print('saving config', config)
+        self.setting.saveConfig(config)
+
+    def getConfig(self):
+        cfg = self.setting.readConfig()
+        if cfg is None:
+            return {}
+        else:
+            return cfg

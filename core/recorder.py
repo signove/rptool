@@ -6,6 +6,8 @@ from pynput.keyboard import Key
 from core.clock import Clock
 from core.logger import Logger
 from core.alert import Alert
+from core.verifier import Verifier
+
 from pynput.keyboard import Listener as KeyboardListener
 from pynput.mouse import Listener as MouseListener
 
@@ -22,6 +24,8 @@ class Recorder:
         self.alert = Alert('RPTool - Recording')
         self.drag_start = (0, 0)
         self.drag_start = (0, 0)
+        self.verifier = Verifier()
+        self.pauseTrace = False
 
 
     def save(self, trace):
@@ -33,17 +37,20 @@ class Recorder:
         pressed = args[3]
         if pressed:
             self.drag_start = (args[0], args[1])
-            trace = 'click x={}, y={}, time={}\n'.format(args[0], args[1], self.clock.getTime())
-            self.alert.notify(trace)
-            self.save(trace)
+            if not self.pauseTrace:
+                trace = 'click x={}, y={}, time={}\n'.format(args[0], args[1], self.clock.getTime())
+                self.alert.notify(trace)
+                self.save(trace)
         else:
             self.drag_end = (args[0], args[1])
             if self.drag_start != self.drag_end:
                 x1, y1 = self.drag_start
                 x2, y2 = self.drag_end
-                trace = 'drag x1={0}, y1={1}, x2={2}, y2={3}\n'.format(x1, y1, x2, y2)
-                self.alert.notify(trace)
-                self.save(trace)
+                # Ignore drag while is paused for a print screen!
+                if not self.pauseTrace:
+                    trace = 'drag x1={0}, y1={1}, x2={2}, y2={3}\n'.format(x1, y1, x2, y2)
+                    self.alert.notify(trace)
+                    self.save(trace)
             else:
                 pass
 
@@ -71,7 +78,12 @@ class Recorder:
             self.alert.notify('Recording stopped!')
             return False
         if args[0] == Key.f2:
-            self.alert.notify('print screen')
+            self.pauseTrace = True
+            self.alert.notify('[F2] Select a region in the screen!')
+            checkpoint = self.verifier.printScreen(self.file)
+            trace = 'checkpoint {}\n'.format(checkpoint)
+            self.save(trace)
+            self.pauseTrace = False
 
     def start(self, file):
         self.file = file

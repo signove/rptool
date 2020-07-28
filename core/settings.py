@@ -3,10 +3,10 @@ import pickle
 
 class Settings:
 
-    def __init__(self):
+    def __init__(self, file):
         self.write_mode = 'wb'
         self.read_mode = 'rb'
-        self.file = 'rptool.cfg'
+        self.file = file
         self.config = {'loop': '0'}
 
     def saveConfig(self, cfg):
@@ -15,6 +15,9 @@ class Settings:
             pickle.dump(self.config, config_file)
 
     def readConfig(self):
-        with open(self.file, self.read_mode) as config_file:
-            self.config = pickle.load(config_file)
-            return self.config
+        try:
+            with open(self.file, self.read_mode) as config_file:
+                self.config = pickle.load(config_file)
+                return self.config
+        except IOError as err:
+            print('error ', err)

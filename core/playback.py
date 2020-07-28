@@ -99,7 +99,7 @@ class PlayBack:
         self.interval = 0
         self.file = ''
         self.alert = Alert('RPTool - Playback')
-        self.setting = Settings()
+        self.setting = Settings('rptool.cfg')
 
     def onPress(self, *args):
         pass
