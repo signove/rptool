@@ -179,6 +179,7 @@ class Ui_MainWindow(object):
         value = self.cbBuilds.currentText()
         self.config['build_id'] = value.split('-')[0]
         self.config['build_name'] = value.split('-')[1]
+        self.config['username'] = self.leUsername.text()
         print('config ', self.config)
         self.rpt.saveConfig(self.config)
 

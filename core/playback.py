@@ -8,6 +8,7 @@ from pynput.keyboard import Listener as KeyboardListener
 from core.logger import Logger
 from core.alert import Alert
 from core.settings import Settings
+from core.verifier import Verifier
 
 
 class Trace:
@@ -21,7 +22,9 @@ class Trace:
         self.dx = 0
         self.dy = 0
         self.drag = (0, 0)
+        self.checkpoint = ''
         self.parse(raw)
+
 
     def parse(self, raw):
         raw = raw.replace('\n', '').replace(',', '')
@@ -35,8 +38,14 @@ class Trace:
             self.parseScroll(trace_parts)
         elif self.type == 'drag':
             self.parseDrag(trace_parts)
+        elif self.type == 'checkpoint':
+            self.parseCheckPoint(trace_parts)
         else:
             pass
+
+    def parseCheckPoint(self, trace_parts):
+        self.checkpoint = trace_parts[1]
+
 
     def parseDrag(self, trace_parts):
         x2 = int(trace_parts[3].split('=')[1])
@@ -86,6 +95,9 @@ class Trace:
     def isHotKey(self):
         return self.key in ['ctrl', 'alt', 'del', 'tab', 'shift']
 
+    def getCheckPoint(self):
+        return self.checkpoint
+
 
 class PlayBack:
 
@@ -100,6 +112,7 @@ class PlayBack:
         self.file = ''
         self.alert = Alert('RPTool - Playback')
         self.setting = Settings('rptool.cfg')
+        self.verifier = Verifier()
 
     def onPress(self, *args):
         pass
@@ -127,11 +140,16 @@ class PlayBack:
                     self.scroll(trace)
                 elif trace.getType() == 'drag':
                     self.drag(trace)
+                elif trace.getType() == 'checkpoint':
+                    self.checkpoint(trace)
                 else:
                     pass
             else:
                 print('Stopped playback')
                 return
+
+    def checkpoint(self, trace):
+        self.verifier.check(trace.getCheckPoint())
 
     def drag(self, trace):
         x, y = trace.getDrag()

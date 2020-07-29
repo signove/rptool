@@ -46,7 +46,8 @@ class FileManager:
         files = []
         for r, d, f in os.walk(folder):
             for file in f:
-                files.append(file)
+                if '.png' not in file:
+                    files.append(file)
         return files
 
     def debug(self, message):
