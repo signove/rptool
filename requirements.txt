@@ -1,0 +1,8 @@
+pip~=20.1
+wheel~=0.34.2
+setuptools~=46.2.0
+notify2~=0.3.1
+PyAutoGUI~=0.9.48
+pynput~=1.6.7
+TestLink-API-Python-client~=0.8.1
+PyQt5~=5.15.0

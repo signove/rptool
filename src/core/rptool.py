@@ -2,13 +2,13 @@
 
 
 # -*- coding: utf-8 -*-
-from core.rptio import FileManager
-from core.logger import Logger
-from core.recorder import Recorder
-from core.playback import PlayBack
-from core.alert import Alert
-from core.testlinkapi import TestlinkAPI
-from core.settings import Settings
+from src.core.rptio import FileManager
+from src.core.logger import Logger
+from src.core.recorder import Recorder
+from src.core.playback import PlayBack
+from src.core.alert import Alert
+from src.core.testlinkapi import TestlinkAPI
+from src.core.settings import Settings
 
 
 class RPTool:

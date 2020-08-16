@@ -1,7 +1,8 @@
 import os
 import testlink
-from core.settings import Settings
+from src.core.settings import Settings
 from testlink.testlinkerrors import TLResponseError
+
 
 class TestlinkAPI:
 

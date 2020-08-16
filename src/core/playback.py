@@ -5,10 +5,10 @@
 import pyautogui
 from pynput.keyboard import Key
 from pynput.keyboard import Listener as KeyboardListener
-from core.logger import Logger
-from core.alert import Alert
-from core.settings import Settings
-from core.verifier import Verifier
+from src.core.logger import Logger
+from src.core.alert import Alert
+from src.core.settings import Settings
+from src.core.verifier import Verifier
 
 
 class Trace:
@@ -23,6 +23,7 @@ class Trace:
         self.dy = 0
         self.drag = (0, 0)
         self.checkpoint = ''
+        self.image = ''
         self.parse(raw)
 
 
@@ -40,8 +41,13 @@ class Trace:
             self.parseDrag(trace_parts)
         elif self.type == 'checkpoint':
             self.parseCheckPoint(trace_parts)
+        elif self.type == 'find_and_click':
+            self.parseFindAndClick(trace_parts)
         else:
             pass
+
+    def parseFindAndClick(self, trace_parts):
+        self.image = trace_parts[1]
 
     def parseCheckPoint(self, trace_parts):
         self.checkpoint = trace_parts[1]
@@ -98,6 +104,9 @@ class Trace:
     def getCheckPoint(self):
         return self.checkpoint
 
+    def getImage(self):
+        return self.image
+
 
 class PlayBack:
 
@@ -142,11 +151,22 @@ class PlayBack:
                     self.drag(trace)
                 elif trace.getType() == 'checkpoint':
                     self.checkpoint(trace)
+                elif trace.getType() == 'find_and_click':
+                    print('type find and click')
+                    self.findAndClick(trace)
                 else:
                     pass
             else:
                 print('Stopped playback')
                 return
+
+    def findAndClick(self, trace):
+        try:
+            self.alert.notify('wating finding image')
+            location = pyautogui.locateOnScreen(trace.getImage())
+            pyautogui.click(location)
+        except:
+            self.alert.notify('Image not found')
 
     def checkpoint(self, trace):
         self.verifier.check(trace.getCheckPoint())

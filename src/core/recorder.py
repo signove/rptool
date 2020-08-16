@@ -3,10 +3,10 @@
 
 # -*- coding: utf-8 -*-
 from pynput.keyboard import Key
-from core.clock import Clock
-from core.logger import Logger
-from core.alert import Alert
-from core.verifier import Verifier
+from src.core.clock import Clock
+from src.core.logger import Logger
+from src.core.alert import Alert
+from src.core.verifier import Verifier
 
 from pynput.keyboard import Listener as KeyboardListener
 from pynput.mouse import Listener as MouseListener
@@ -66,23 +66,39 @@ class Recorder:
 
     def onPress(self, *args):
         # key
-        trace = 'press key={}\n'.format(args[0])
-        self.alert.notify(trace)
-        self.save(trace)
+        if not self.pauseTrace:
+            trace = 'press key={}\n'.format(args[0])
+            self.alert.notify(trace)
+            self.save(trace)
+        else:
+            pass
 
     def onRelease(self, *args):
         # Stop recording when press 'esc'
         if args[0] == Key.esc:
             self.stop()
-            self.log.debug('stopped recording, ESC key was pressed')
-            self.alert.notify('Recording stopped!')
+            self.log.debug('[ESC] Stop recording!')
+            self.alert.notify('[ESC] Stop recording!')
             return False
         if args[0] == Key.f2:
             self.pauseTrace = True
-            self.alert.notify('[F2] Select a region in the screen!')
+            self.alert.notify('[F2] Select a region!')
             checkpoint = self.verifier.printScreen(self.file)
             trace = 'checkpoint {}\n'.format(checkpoint)
             self.save(trace)
+            self.pauseTrace = False
+        if args[0] == Key.f4:
+            self.pauseTrace = True
+            self.alert.notify('[F4] Select a region!')
+            location_point = self.verifier.printScreen(self.file)
+            trace = 'find_and_click {}\n'.format(location_point)
+            self.save(trace)
+            self.pauseTrace = False
+        if args[0] == Key.f6:
+            self.alert.notify('[F6] Pause started!')
+            self.pauseTrace = True
+        if args[0] == Key.f7:
+            self.alert.notify('[F7] Pause stopped!')
             self.pauseTrace = False
 
     def start(self, file):

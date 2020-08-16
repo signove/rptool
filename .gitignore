@@ -1,4 +1,5 @@
-/tests
-/logs
+/src/tests
+/src/logs
 .idea
-/core/__pycache__/
+/src/core/__pycache__/
+/env

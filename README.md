@@ -2,7 +2,11 @@
 
 Graphical User Interface for RPTool.
 
-- qa-rptool-viewer.ui should be opened in Qt Designer;
+## Instalation
 
-- For generate the python file run the command:
-pyuic5 -x qa-test-viewer.ui -o qa-test-viewer-ui.py
+pip3 install --user pyqt5  
+sudo apt-get install python3-pyqt5  
+sudo apt-get install pyqt5-dev-tools
+sudo apt-get install qttools5-dev-tools
+
+e
