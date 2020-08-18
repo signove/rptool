@@ -1,9 +1,10 @@
 import subprocess
 import pyautogui
 
-from src.core.alert import Alert
-from src.core.settings import Settings
-from src.core.testlinkapi import TestlinkAPI
+from core.alert import Alert
+from core.settings import Settings
+from core.testlinkapi import TestlinkAPI
+from testlink.testlinkerrors import TLResponseError
 
 
 class Verifier:
@@ -20,7 +21,7 @@ class Verifier:
         print('check {0}'.format(filename))
         filename = '{0}_{1}.png'.format(filename, self.checkPointIndex)
         print('Saved as {}'.format(filename))
-        subprocess.run(['scrot', '-s', filename])
+        subprocess.run(['scrot', '-s -d 2', filename])
         self.checkPointIndex += 1
         return filename
 
@@ -34,7 +35,6 @@ class Verifier:
             self.alert.notify('checked Fail')
             self.report(checkpoint, 'f')
 
-
     def report(self, checkpoint, status):
         """ Sends the test result to Testlink """
         identifier = checkpoint.split('/')[-1]
@@ -44,6 +44,8 @@ class Verifier:
         notes = '...'
         user = self.config['username']
         platform = self.config['platform_id']
-        self.api.reportTCResult(None, plan, build, status, notes, user, platform, test)
-        print('reporting ... ', test)
-
+        try:
+            self.api.reportTCResult(None, plan, build, status, notes, user, platform, test)
+            print('reporting ... ', test)
+        except TLResponseError as err:
+            print('error: ', err)

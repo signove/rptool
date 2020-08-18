@@ -2,13 +2,13 @@
 
 
 # -*- coding: utf-8 -*-
-from src.core.rptio import FileManager
-from src.core.logger import Logger
-from src.core.recorder import Recorder
-from src.core.playback import PlayBack
-from src.core.alert import Alert
-from src.core.testlinkapi import TestlinkAPI
-from src.core.settings import Settings
+from core.rptio import FileManager
+from core.logger import Logger
+from core.recorder import Recorder
+from core.playback import PlayBack
+from core.alert import Alert
+from core.testlinkapi import TestlinkAPI
+from core.settings import Settings
 
 
 class RPTool:
@@ -22,9 +22,10 @@ class RPTool:
         self.alert = Alert('RPTool')
         self.api = TestlinkAPI()
         self.setting = Settings('testlink.cfg')
+        self.testFolder = 'artifacts'
 
     def getTestFolder(self):
-        return '{}/tests'.format(self.fileManager.getCurrentFolder())
+        return '{0}/{1}'.format(self.fileManager.getCurrentFolder(), self.testFolder)
 
     def getTestFiles(self):
         return self.fileManager.list(self.getTestFolder())

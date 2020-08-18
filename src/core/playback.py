@@ -5,10 +5,10 @@
 import pyautogui
 from pynput.keyboard import Key
 from pynput.keyboard import Listener as KeyboardListener
-from src.core.logger import Logger
-from src.core.alert import Alert
-from src.core.settings import Settings
-from src.core.verifier import Verifier
+from core.logger import Logger
+from core.alert import Alert
+from core.settings import Settings
+from core.verifier import Verifier
 
 
 class Trace:

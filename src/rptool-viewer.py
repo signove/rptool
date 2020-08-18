@@ -4,8 +4,8 @@
 # -*- coding: utf-8 -*-
 
 import time
-from src.core.settings import Settings
-from src.core.rptool import RPTool
+from core.settings import Settings
+from core.rptool import RPTool
 from PyQt5 import QtCore, QtWidgets
 
 

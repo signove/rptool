@@ -1,6 +1,6 @@
 import os
 import testlink
-from src.core.settings import Settings
+from core.settings import Settings
 from testlink.testlinkerrors import TLResponseError
 
 

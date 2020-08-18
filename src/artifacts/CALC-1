@@ -1,0 +1,13 @@
+click x=28, y=31, time=0
+press key='c'
+press key='a'
+press key='l'
+click x=83, y=85, time=3.1
+click x=1052, y=790, time=2.8
+click x=1231, y=824, time=1.28
+click x=1054, y=798, time=1.45
+click x=1313, y=824, time=5.48
+checkpoint /home/samuel/PycharmProjects/qa-rptool-ui/src/artifacts/CALC-1_0.png
+click x=1366, y=503, time=7.86
+press key=Key.esc
+ca

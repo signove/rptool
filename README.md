@@ -1,12 +1,21 @@
 # QA-RPTOOL-UI
 
-Graphical User Interface for RPTool.
+Record and Playback tool for Software Testing Automation Integrated with Testlink (POC).
 
-## Instalation
+![alt text](demo.gif)
 
-pip3 install --user pyqt5  
-sudo apt-get install python3-pyqt5  
-sudo apt-get install pyqt5-dev-tools
-sudo apt-get install qttools5-dev-tools
+### Installation
 
-e
+> python3 -m venv env
+
+> source venv/bin/activate
+
+> pip3 install -r requirements.txt
+
+### Running the application
+
+> python3 src/rptool.py
+
+### Running the Tests
+
+> python -m unittest discover -s tests

@@ -4,7 +4,7 @@
 # -*- coding: utf-8 -*-
 import os
 from datetime import datetime
-from src.core.rptio import FileManager
+from core.rptio import FileManager
 
 
 class Logger:

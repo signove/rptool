@@ -4,7 +4,7 @@
 # -*- coding: utf-8 -*-
 import notify2
 import os
-from src.core.logger import Logger
+from core.logger import Logger
 
 
 class Alert:

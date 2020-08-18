@@ -3,10 +3,10 @@
 
 # -*- coding: utf-8 -*-
 from pynput.keyboard import Key
-from src.core.clock import Clock
-from src.core.logger import Logger
-from src.core.alert import Alert
-from src.core.verifier import Verifier
+from core.clock import Clock
+from core.logger import Logger
+from core.alert import Alert
+from core.verifier import Verifier
 
 from pynput.keyboard import Listener as KeyboardListener
 from pynput.mouse import Listener as MouseListener
@@ -26,7 +26,6 @@ class Recorder:
         self.drag_start = (0, 0)
         self.verifier = Verifier()
         self.pauseTrace = False
-
 
     def save(self, trace):
         self.fileManager.write(self.file, trace)
@@ -67,9 +66,11 @@ class Recorder:
     def onPress(self, *args):
         # key
         if not self.pauseTrace:
-            trace = 'press key={}\n'.format(args[0])
-            self.alert.notify(trace)
-            self.save(trace)
+            # Exclude the keys used as commands by the tool.
+            if args[0] not in [Key.f2, Key.f6, Key.f7]:
+                trace = 'press key={}\n'.format(args[0])
+                self.alert.notify(trace)
+                self.save(trace)
         else:
             pass
 
