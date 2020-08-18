@@ -1,4 +1,5 @@
 /src/logs
 .idea
 /src/core/__pycache__/
+/src/core/*.pyc
 /venv
