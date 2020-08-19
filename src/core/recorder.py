@@ -23,7 +23,7 @@ class Recorder:
         self.clock = Clock()
         self.alert = Alert('RPTool - Recording')
         self.drag_start = (0, 0)
-        self.drag_start = (0, 0)
+        self.drag_end = (0, 0)
         self.verifier = Verifier()
         self.pauseTrace = False
 

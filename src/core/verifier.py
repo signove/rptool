@@ -17,7 +17,7 @@ class Verifier:
         self.api = TestlinkAPI()
 
     def printScreen(self, filename):
-        """ F2 key pressed should to capture the selected area on screen """
+        """ Key F2 pressed should capture the selected area on screen """
         print('check {0}'.format(filename))
         filename = '{0}_{1}.png'.format(filename, self.checkPointIndex)
         print('Saved as {}'.format(filename))
@@ -26,7 +26,7 @@ class Verifier:
         return filename
 
     def check(self, checkpoint):
-        """ Check if the checkpoint image in visible on screen """
+        """ Check if the checkpoint image is visible on screen """
         checked = pyautogui.locateOnScreen(checkpoint)
         if checked:
             self.alert.notify('checked Ok')

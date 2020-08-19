@@ -17,5 +17,6 @@ Record and Playback tool for Software Testing Automation Integrated with Testlin
 > python3 src/rptool.py
 
 ### Running the Tests
+> cd src
 
-> python -m unittest discover -s tests
+>> python -m unittest discover -s tests
